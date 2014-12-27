@@ -66,8 +66,10 @@ public class PassiveRead {
     byte[] mask = new byte[512];//æŽ©æŽª
     byte[] IDTemp = new byte[512];
     int timer_interval=1000 ;//å®šæ—¶å™¨é—´éš”
-
-
+    
+    static public String epc_Number_Selected = "";
+    static public boolean is_epc_Number_Selected = false;
+    
     private MyTimer mytimer = new MyTimer();
     boolean running = true;//å®šæ—¶å™¨ä½¿ç”¨
 
@@ -82,7 +84,6 @@ public class PassiveRead {
     
     /**
      * This will continous reading from the reader as needed.
-     * 
      */
     public void readContinously() {
     	System.out.println(" readContinously called...");
@@ -706,8 +707,10 @@ public class PassiveRead {
 	                    // Print logic for Epc Enteries.
 	                    if(result!=null) {
 		                    for(EpcEntry s : result){
-		                    	System.out.println(s.getStrEPC()+"  "+s.getStrID()+"  "+s.getStrLLen()+"  "+s.getStrSuccess()+"  "+s.getStrTimes());
-		                    	
+		                    	System.out.println("epc:"+s.getStrEPC()+"..id:"+s.getStrID()+"..len:"+s.getStrLLen()+"..suc:"+s.getStrSuccess()+"..tim:"+s.getStrTimes());
+		                    	epc_Number_Selected = s.getStrEPC();
+		                    	System.out.println("PassiveRead.epc_Number_Selected:"+PassiveRead.epc_Number_Selected );
+		                    	is_epc_Number_Selected = true;
 		                    	setEnd(true);
 		                    	break;
 		                    	// Got one epc number.
