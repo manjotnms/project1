@@ -16,22 +16,39 @@ import Reader.ReaderAPI;
 //import ui.JDialogDemo.MyTimerAuto;
 //import ui.JDialogDemo.MyTimerSerialAuto;
 
-public class PassiveRead {
-	public static void main(String[] args) {
-		PassiveRead pr = new PassiveRead();
-		if( pr.connectReader() ) {
+public class PassiveRead extends Thread {
+	// This is the object of reader api, which is used by the whole program to call the utils of Reader_API.
+	ReaderAPI objectReaderApi = null;
+	
+	public PassiveRead( String rfidReaderToBeConnected ){
+		this.readerUsed = rfidReaderToBeConnected;
+		objectReaderApi = new ReaderAPI();
+	}
+	
+	@Override
+	public void run() {
+		//PassiveRead pr = new PassiveRead( readerUsed );
+		if( this.connectReader() ) {
 			System.out.println("Reading starting");
-			new PassiveRead().readContinously();
+			this.readContinously();
 		} else {
 			System.out.println("Oops, not getting the connection.");
 		}
+	}
+
+	public static void main(String[] args) {
+		
+		PassiveRead thread_passiveRead_One = new PassiveRead(  PassiveReaderPropertyConstants.RFID_READER_DS_WB_22  );
+		thread_passiveRead_One.start();
+		
+		PassiveRead thread_passiveRead_Two = new PassiveRead(  PassiveReaderPropertyConstants.RFID_READER_DS_WB_24  );
+		thread_passiveRead_Two.start();
 		
 		//System.out.println("Got one EPC number : "+epcNum);
 		//System.out.println("Stop Reading");
 		
 		//new PassiveRead().disconnectReader();
 		//System.out.println("Disconnect Reader Done.");
-		
 	}
 	
 	// Variables for method : 
@@ -69,6 +86,8 @@ public class PassiveRead {
     
     static public String epc_Number_Selected = "";
     static public boolean is_epc_Number_Selected = false;
+    static public String readerUsed_epc_Number_Selected = ""; 
+    public String readerUsed = "";
     
     private MyTimer mytimer = new MyTimer();
     boolean running = true;//å®šæ—¶å™¨ä½¿ç”¨
@@ -214,7 +233,7 @@ public class PassiveRead {
 // 		case 4:
 // 		case 8:
 		default:
-			res = ReaderAPI.Net_SetAntenna(hScanner[0], m_antenna_sel);
+			res = objectReaderApi.Net_SetAntenna(hScanner[0], m_antenna_sel);
 			/*switch(ConnectMode)
 			{
 			case 0://ç½‘å�£
@@ -361,19 +380,32 @@ public class PassiveRead {
         String strReaderIp;//Readerip
         String strTemp;
         String strComm;
+        
+        // Read these parameters from Resource Bundle.
+        try {
+    		// Read values from config file to load the machine.
+    	    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com.safeinstruments.ui/PassiveReaderConfig");
+    	    //System.out.println("value is :"+bundle.getString(PropertiesConstants.prop_selected_machine)+"_");
+    	    
+    	    strHostIp = bundle.getString( PassiveReaderPropertyConstants.HOST_IP ); //"192.168.0.200";	//Host IP
+            strTemp =  bundle.getString(readerUsed + PassiveReaderPropertyConstants.HOST_PORT ); //"60084";	//host port
+            m_HostPort  =   Integer.parseInt(strTemp);
+            
+            strReaderIp   = bundle.getString(readerUsed + PassiveReaderPropertyConstants.READER_IP);  // "192.168.0.100";//Reader IP
+            strTemp     =  bundle.getString(readerUsed + PassiveReaderPropertyConstants.READER_PORT); // "1969";//Reader port
+            m_Port  =   Integer.parseInt(strTemp);
 
-        strHostIp   =   "192.168.0.200";//Host IP
-        strTemp     =   "60084";//host port
-        m_HostPort  =   Integer.parseInt(strTemp);
-
-        strReaderIp   =   "192.168.0.100";//Reader IP
-        strTemp     =   "1969";//Reader port
-        m_Port  =   Integer.parseInt(strTemp);
+        } catch(Exception e) {
+        	e.printStackTrace();
+        	System.out.println("Exception while loading the configurations from Passive Reader Config file. Return false.");
+        	return false;
+        }
 
         //strComm = jComboBox_ports.getSelectedItem().toString();
 
-        //iRet = ReaderAPI.Net_ConnectScanner(hScanner, "192.168.0.103", 1969, "192.168.0.71", 5555);
-        res = ReaderAPI.Net_ConnectScanner(hScanner, strReaderIp, m_Port, strHostIp, m_HostPort);
+        // iRet = ReaderAPI.Net_ConnectScanner(hScanner, "192.168.0.103", 1969, "192.168.0.71", 5555);
+        // System.out.println(hScanner +":"+ strReaderIp +":"+ m_Port +":"+ strHostIp +":"+ m_HostPort);
+        res = objectReaderApi.Net_ConnectScanner(hScanner, strReaderIp, m_Port, strHostIp, m_HostPort);
         
         /*switch (ConnectMode){
             case 0: //ç½‘å�£
@@ -396,7 +428,7 @@ public class PassiveRead {
                     switch(ConnectMode)
                     {
                     case 0://ç½‘å�£
-*/                        res = ReaderAPI.Net_GetReaderVersion(hScanner[0], HandVer, SoftVer);
+*/                        res = objectReaderApi.Net_GetReaderVersion(hScanner[0], HandVer, SoftVer);
                     /*        break;
                     case 1://RS232
                         res = ReaderAPI.GetReaderVersion(hScanner[0], HandVer, SoftVer, Address);
@@ -424,7 +456,7 @@ public class PassiveRead {
             for (i = 0; i < 5; i++)
             {
                 //å�–åŸºæœ¬å�‚æ•°
-            	res=ReaderAPI.Net_ReadBasicParam(hScanner[0], gBasicParam);
+            	res=objectReaderApi.Net_ReadBasicParam(hScanner[0], gBasicParam);
                 /*switch(ConnectMode)
                 {
                 case 0://ç½‘å�£
@@ -456,7 +488,7 @@ public class PassiveRead {
             byte [] gAutoParam = new byte[32];
             for (i = 0; i < 5; i++)
             {
-            	res=ReaderAPI.Net_ReadAutoParam(hScanner[0], gAutoParam);
+            	res=objectReaderApi.Net_ReadAutoParam(hScanner[0], gAutoParam);
                 /*//å�–åŸºæœ¬å�‚æ•°
                 switch(ConnectMode)
                 {
@@ -564,7 +596,7 @@ public class PassiveRead {
 	            }
 	            if ( bFlag )
 	            {
-	            		res=ReaderAPI.Net_SetAntenna(hScanner[0], itmpAnt);
+	            		res = objectReaderApi.Net_SetAntenna(hScanner[0], itmpAnt);
 	                    /*switch(ConnectMode)
 	                    {
 	                    case 0://ç½‘å�£
@@ -593,7 +625,7 @@ public class PassiveRead {
 	            //////////////////////////////////////////////////////////////////////////
 	            switch(nIDEvent) {
 	                case 1://list to tag
-	                	res=ReaderAPI.Net_EPC1G2_ReadLabelID(hScanner[0],mem,ptr,len,mask,IDBuffer,nCounter);
+	                	res = objectReaderApi.Net_EPC1G2_ReadLabelID(hScanner[0],mem,ptr,len,mask,IDBuffer,nCounter);
 	/*                    switch(ConnectMode)
 	                    {
 	                    case 0://ç½‘å�£
@@ -704,13 +736,22 @@ public class PassiveRead {
 	
 	                    }
 	                    
+	                    // Additional check for stoping all other running threads of ReaderAPI to stop. if one epc is selected.
+	                    if(PassiveRead.is_epc_Number_Selected) {
+	                    	System.out.println("Epc number is selected by other reader. So stoping :"+readerUsed);
+	                    	setEnd(true);
+	                    	break;
+	                    }
+	                    	
 	                    // Print logic for Epc Enteries.
 	                    if(result!=null) {
-		                    for(EpcEntry s : result){
-		                    	System.out.println("epc:"+s.getStrEPC()+"..id:"+s.getStrID()+"..len:"+s.getStrLLen()+"..suc:"+s.getStrSuccess()+"..tim:"+s.getStrTimes());
+		                    for(EpcEntry s : result) {
+		                    	//System.out.println("epc:"+s.getStrEPC()+"..id:"+s.getStrID()+"..len:"+s.getStrLLen()+"..suc:"+s.getStrSuccess()+"..tim:"+s.getStrTimes());
 		                    	epc_Number_Selected = s.getStrEPC();
-		                    	System.out.println("PassiveRead.epc_Number_Selected:"+PassiveRead.epc_Number_Selected );
+		                    	//System.out.println("PassiveRead.epc_Number_Selected:"+PassiveRead.epc_Number_Selected );
 		                    	is_epc_Number_Selected = true;
+		                    	//System.out.println("Passive Reader used is :"+readerUsed);
+		                    	readerUsed_epc_Number_Selected = readerUsed;
 		                    	setEnd(true);
 		                    	break;
 		                    	// Got one epc number.
