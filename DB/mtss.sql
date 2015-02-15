@@ -18,39 +18,12 @@ CREATE SCHEMA IF NOT EXISTS `mtss` DEFAULT CHARACTER SET latin1 ;
 USE `mtss` ;
 
 -- -----------------------------------------------------
--- Table `mtss`.`taxdetails`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mtss`.`taxdetails` ;
-
-CREATE TABLE IF NOT EXISTS `mtss`.`taxdetails` (
-  `id` INT(10) UNSIGNED NOT NULL,
-  `taxPercent` DECIMAL(5,2) NULL DEFAULT NULL,
-  `royalty` DECIMAL(5,2) NULL DEFAULT NULL,
-  `sed` DECIMAL(5,2) NULL DEFAULT NULL,
-  `cleanEngyCess` DECIMAL(5,2) NULL DEFAULT NULL,
-  `weighMeBt` DECIMAL(5,2) NULL DEFAULT NULL,
-  `slc` DECIMAL(5,2) NULL DEFAULT NULL,
-  `wrc` DECIMAL(5,2) NULL DEFAULT NULL,
-  `bazarFee` DECIMAL(5,2) NULL DEFAULT NULL,
-  `centExcRate` DECIMAL(5,2) NULL DEFAULT NULL,
-  `eduCessRate` DECIMAL(5,2) NULL DEFAULT NULL,
-  `highEduRate` DECIMAL(5,2) NULL DEFAULT NULL,
-  `roadCess` DECIMAL(5,2) NULL DEFAULT NULL,
-  `ambhCess` DECIMAL(5,2) NULL DEFAULT NULL,
-  `otherCharges` DECIMAL(5,2) NULL DEFAULT NULL,
-  `doNo` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = latin1;
-
-
--- -----------------------------------------------------
 -- Table `mtss`.`deliveryorderdetails`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `mtss`.`deliveryorderdetails` ;
 
 CREATE TABLE IF NOT EXISTS `mtss`.`deliveryorderdetails` (
-  `id` INT(11) NOT NULL,
+  `id` INT(11) NOT NULL DEFAULT 1000,
   `doNo` VARCHAR(45) NOT NULL,
   `wayBridgeId` INT(11) NOT NULL,
   `purchaserName` VARCHAR(45) NOT NULL,
@@ -61,10 +34,12 @@ CREATE TABLE IF NOT EXISTS `mtss`.`deliveryorderdetails` (
   `applNo` INT(10) UNSIGNED NOT NULL,
   `applDate` DATETIME NOT NULL,
   `doQty` BIGINT(20) NOT NULL,
-  `draftNo1` LONGTEXT NOT NULL,
-  `draftDt1` DATETIME NULL DEFAULT NULL,
+  `F-AuctionNo` VARCHAR(45) NULL,
+  `bank1` VARCHAR(60) NULL,
+  `draftNo1` LONGTEXT NULL,
+  `draftDt1` DATETIME NULL,
   `draftAmt1` DOUBLE NOT NULL,
-  `draftNo2` LONGTEXT NULL DEFAULT NULL,
+  `draftNo2` LONGTEXT NULL,
   `draftDt2` DATETIME NOT NULL,
   `draftAmt2` DOUBLE NOT NULL,
   `bank2` VARCHAR(60) NOT NULL,
@@ -77,19 +52,16 @@ CREATE TABLE IF NOT EXISTS `mtss`.`deliveryorderdetails` (
   `division` VARCHAR(20) NOT NULL,
   `commission` VARCHAR(30) NOT NULL,
   `vattinNo` LONGTEXT NOT NULL,
+  `F-AuctionDate` DATETIME NULL,
   `cstNo` VARCHAR(30) NOT NULL,
   `basicRate` DECIMAL(10,5) NOT NULL,
   `pan` VARCHAR(15) NOT NULL,
   `doStartDate` DATETIME NOT NULL,
   `doEndDate` DATETIME NOT NULL,
-  `tax_and_price_id` INT(10) UNSIGNED NOT NULL,
-  PRIMARY KEY USING BTREE (`id`),
-  INDEX `fk_salesdemo_tax_and_price_idx` (`tax_and_price_id` ASC),
-  CONSTRAINT `fk_salesdemo_tax_and_price`
-    FOREIGN KEY (`tax_and_price_id`)
-    REFERENCES `mtss`.`taxdetails` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `taxtype` VARCHAR(5) NULL,
+  `custCd` INT(10) NULL,
+  `excRegNo` VARCHAR(20) NULL,
+  PRIMARY KEY USING BTREE (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 21
 DEFAULT CHARACTER SET = latin1;
@@ -176,7 +148,7 @@ DROP TABLE IF EXISTS `mtss`.`invoicedetail` ;
 
 CREATE TABLE IF NOT EXISTS `mtss`.`invoicedetail` (
   `InvoiceNo` VARCHAR(45) NOT NULL,
-  `BasicAmount` DECIMAL(20,10) NULL DEFAULT NULL,
+  `BasicAmount` DECIMAL(20,10) NULL,
   `Royalty` DECIMAL(20,10) NULL DEFAULT NULL,
   `Exicse` DECIMAL(20,10) NULL DEFAULT NULL,
   `EducationCess` DECIMAL(20,10) NULL DEFAULT NULL,
@@ -210,6 +182,7 @@ CREATE TABLE IF NOT EXISTS `mtss`.`loginuser` (
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `userType` VARCHAR(10) NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
@@ -257,9 +230,10 @@ DROP TABLE IF EXISTS `mtss`.`productionvechdetail` ;
 
 CREATE TABLE IF NOT EXISTS `mtss`.`productionvechdetail` (
   `Id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `IMEINo` INT(20) NULL,
   `EPCNo` INT(11) UNSIGNED NULL DEFAULT NULL,
   `VechNo` VARCHAR(45) NULL DEFAULT NULL,
-  `TareWeight` BIGINT(20) NULL DEFAULT NULL,
+  `TareWeight` BIGINT(20) NULL,
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
@@ -291,6 +265,33 @@ CREATE TABLE IF NOT EXISTS `mtss`.`productionws2` (
   `NetWeight` BIGINT(20) NULL DEFAULT NULL,
   `Date` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`TransactionId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `mtss`.`taxdetails`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mtss`.`taxdetails` ;
+
+CREATE TABLE IF NOT EXISTS `mtss`.`taxdetails` (
+  `id` INT(10) UNSIGNED NOT NULL,
+  `taxPercent` DECIMAL(5,2) NULL DEFAULT NULL,
+  `royalty` DECIMAL(5,2) NULL DEFAULT NULL,
+  `sed` DECIMAL(5,2) NULL DEFAULT NULL,
+  `cleanEngyCess` DECIMAL(5,2) NULL DEFAULT NULL,
+  `weighMeBt` DECIMAL(5,2) NULL DEFAULT NULL,
+  `slc` DECIMAL(5,2) NULL DEFAULT NULL,
+  `wrc` DECIMAL(5,2) NULL DEFAULT NULL,
+  `bazarFee` DECIMAL(5,2) NULL DEFAULT NULL,
+  `centExcRate` DECIMAL(5,2) NULL DEFAULT NULL,
+  `eduCessRate` DECIMAL(5,2) NULL DEFAULT NULL,
+  `highEduRate` DECIMAL(5,2) NULL DEFAULT NULL,
+  `roadCess` DECIMAL(5,2) NULL DEFAULT NULL,
+  `ambhCess` DECIMAL(5,2) NULL DEFAULT NULL,
+  `otherCharges` DECIMAL(5,2) NULL,
+  `doNo` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
 
@@ -350,7 +351,7 @@ DEFAULT CHARACTER SET = latin1;
 DROP TABLE IF EXISTS `mtss`.`intercoaltransfer` ;
 
 CREATE TABLE IF NOT EXISTS `mtss`.`intercoaltransfer` (
-  `DNo` INT NOT NULL,
+  `DNo` INT NOT NULL AUTO_INCREMENT,
   `DateEntry` DATETIME NULL,
   `Quantity` BIGINT NULL,
   `Source` VARCHAR(45) NULL,
@@ -361,11 +362,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mtss`.`internalcoaltrans`
+-- Table `mtss`.`Internalactivity`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mtss`.`internalcoaltrans` ;
+DROP TABLE IF EXISTS `mtss`.`Internalactivity` ;
 
-CREATE TABLE IF NOT EXISTS `mtss`.`internalcoaltrans` (
+CREATE TABLE IF NOT EXISTS `mtss`.`Internalactivity` (
   `ActivityNo` INT(11) NOT NULL,
   `DoNo` INT NULL,
   `EpcNo` INT(11) NULL,
@@ -388,6 +389,27 @@ CREATE TABLE IF NOT EXISTS `mtss`.`internalcoaltrans` (
     REFERENCES `mtss`.`GpsInventory` (`IMEI`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mtss`.`MineDetails`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mtss`.`MineDetails` ;
+
+CREATE TABLE IF NOT EXISTS `mtss`.`MineDetails` (
+  `Id` INT NOT NULL,
+  `MineCode` VARCHAR(45) NOT NULL,
+  `MineAddress` VARCHAR(45) NULL,
+  `VATTIN` INT NULL,
+  `CSTNO` INT NULL,
+  `EXciseRegidNo` VARCHAR(45) NULL,
+  `RangeCode` VARCHAR(45) NULL,
+  `DivisonCode` VARCHAR(45) NULL,
+  `Commision` VARCHAR(45) NULL,
+  `Phone` INT NULL,
+  `Fax` INT NULL,
+  PRIMARY KEY (`Id`))
 ENGINE = InnoDB;
 
 
