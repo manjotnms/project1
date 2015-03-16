@@ -203,6 +203,7 @@ CREATE TABLE IF NOT EXISTS `mtss`.`othergood` (
   `NetWeight` BIGINT NULL DEFAULT NULL,
   `DateReturn` DATETIME NULL DEFAULT NULL,
   `ChallenNo` VARCHAR(45) NULL,
+  `VechNo` varchar(45) default NULL,
   PRIMARY KEY (`OtherActivityNo`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
@@ -351,6 +352,7 @@ CREATE TABLE IF NOT EXISTS `mtss`.`intercoaltransfer` (
   `Source` VARCHAR(45) NULL,
   `Destination` VARCHAR(45) NULL,
   `Type` INT NULL,
+   `RemQuantity` bigint(20) unsigned default NULL,
   PRIMARY KEY (`DNo`))
 ENGINE = InnoDB;
 
@@ -370,6 +372,9 @@ CREATE TABLE IF NOT EXISTS `mtss`.`Internalactivity` (
   `SecondWeight` BIGINT NULL,
   `SecondWeightTime` DATETIME NULL,
   `Netweight` BIGINT NULL,
+   `VechNo` varchar(45) default NULL,
+  `RLW` bigint(20) unsigned default NULL,
+  `DateTimeIssue` datetime default NULL
   PRIMARY KEY (`ActivityNo`),
   INDEX `FK10_idx` (`EpcNo` ASC),
   INDEX `FK11_idx` (`IMEIno` ASC),
