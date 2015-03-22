@@ -1,0 +1,23 @@
+Below is the detail of PLC variables introduced in DISPATCH WEIGH BRIDGE JAR:
+	A. Which are writen by PLC:
+			> v2 : barrier closed.
+			> v4 : cycle complete.
+			> button : green or Red button pressed.
+	B. Which are writen by Java Code:
+			> v1 : open barrier.
+			> v3 : weight taken.
+			> v5 : button action performed. (Proceed ACK)
+			> wt : weight.
+			
+-----------------------------------------------------------------------------------------------------
+No do qty validation, no rlw..
+
+Below is the detail of PLC variables introduced in PRODUCTION WEIGH BRIDGE JAR:
+
+	A. Which are writen by Java Code:
+			> v1 : truck entered. (Make v1=0, Take epc, validate it from db. say v1 = 1)
+						[constant orange light, Process v2. ]
+	B. Which are writen by PLC:
+			> v2 : green or red button pressed. (When driver press Green say 1, otherwise 2.)
+						[Take weight, Store the weight in database. Ok, set v1=0 ] min: 20 sec should be there.
+------------------------------------------------------------------------------------------------------
