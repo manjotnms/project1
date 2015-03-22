@@ -34,33 +34,33 @@ CREATE TABLE IF NOT EXISTS `mtss`.`deliveryorderdetails` (
   `applNo` INT(10) UNSIGNED NOT NULL,
   `applDate` DATETIME NOT NULL,
   `doQty` BIGINT(20) NOT NULL,
-  `F-AuctionNo` VARCHAR(45) NULL,
-  `bank1` VARCHAR(60) NULL,
-  `draftNo1` LONGTEXT NULL,
-  `draftDt1` DATETIME NULL,
-  `draftAmt1` DOUBLE NOT NULL,
-  `draftNo2` LONGTEXT NULL,
-  `draftDt2` DATETIME NOT NULL,
-  `draftAmt2` DOUBLE NOT NULL,
-  `bank2` VARCHAR(60) NOT NULL,
-  `draftNo3` LONGTEXT NOT NULL,
-  `draftDt3` DATETIME NOT NULL,
-  `draftAmt3` DOUBLE NOT NULL,
-  `bank3` VARCHAR(60) NOT NULL,
-  `QtyBalance` BIGINT(20) NOT NULL,
-  `range` VARCHAR(45) NOT NULL,
-  `division` VARCHAR(20) NOT NULL,
-  `commission` VARCHAR(30) NOT NULL,
-  `vattinNo` LONGTEXT NOT NULL,
-  `F-AuctionDate` DATETIME NULL,
+  `F-AuctionNo` varchar(45) default NULL,
+  `bank1` varchar(60) default NULL,
+  `draftNo1` longtext,
+  `draftDt1` datetime default NULL,
+  `draftAmt1` double NOT NULL,
+  `draftNo2` longtext,
+  `draftDt2` datetime NOT NULL,
+  `draftAmt2` double NOT NULL,
+  `bank2` varchar(60) NOT NULL,
+  `draftNo3` longtext NOT NULL,
+  `draftDt3` datetime NOT NULL,
+  `draftAmt3` double NOT NULL,
+  `bank3` varchar(60) NOT NULL,
+  `QtyBalance` bigint(20) NOT NULL,
+  `range` varchar(45) NOT NULL,
+  `division` varchar(20) NOT NULL,
+  `commission` varchar(30) NOT NULL,
+  `vattinNo` longtext NOT NULL,
+  `F-AuctionDate` datetime default NULL,
   `cstNo` VARCHAR(30) NOT NULL,
   `basicRate` DECIMAL(10,5) NOT NULL,
   `pan` VARCHAR(15) NOT NULL,
   `doStartDate` DATETIME NOT NULL,
   `doEndDate` DATETIME NOT NULL,
-  `taxtype` VARCHAR(5) NULL,
-  `custCd` INT(10) NULL,
-  `excRegNo` VARCHAR(20) NULL,
+  `taxtype` varchar(5) default NULL,
+  `custCd` int(10) default NULL,
+  `excRegNo` varchar(20) default NULL,
   PRIMARY KEY USING BTREE (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 21
@@ -204,6 +204,7 @@ CREATE TABLE IF NOT EXISTS `mtss`.`othergood` (
   `DateReturn` DATETIME NULL DEFAULT NULL,
   `ChallenNo` VARCHAR(45) NULL,
   `VechNo` varchar(45) default NULL,
+  `EpcNo` int(10) unsigned default NULL,
   PRIMARY KEY (`OtherActivityNo`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
@@ -344,7 +345,6 @@ DEFAULT CHARACTER SET = latin1;
 -- Table `mtss`.`intercoaltransfer`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `mtss`.`intercoaltransfer` ;
-
 CREATE TABLE IF NOT EXISTS `mtss`.`intercoaltransfer` (
   `DNo` INT NOT NULL AUTO_INCREMENT,
   `DateEntry` DATETIME NULL,
@@ -352,7 +352,8 @@ CREATE TABLE IF NOT EXISTS `mtss`.`intercoaltransfer` (
   `Source` VARCHAR(45) NULL,
   `Destination` VARCHAR(45) NULL,
   `Type` INT NULL,
-   `RemQuantity` bigint(20) unsigned default NULL,
+  `RemQuantity` bigint(20) unsigned default NULL,
+  `ActivityNo` int(10) unsigned NOT NULL,
   PRIMARY KEY (`DNo`))
 ENGINE = InnoDB;
 
